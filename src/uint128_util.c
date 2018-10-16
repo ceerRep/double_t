@@ -23,10 +23,8 @@ UINT128 UINT128Add(UINT128 u128l,
     asm(
         "movq %3,%%rax\n\t"
         "movq %4,%%rbx\n\t"
-        "movq %5,%%rcx\n\t"
-        "movq %6,%%rdx\n\t"
-        "addq %%rdx,%%rbx\n\t"
-        "adcq %%rcx,%%rax\n\t"
+        "addq %6,%%rbx\n\t"
+        "adcq %5,%%rax\n\t"
         "jc ADD_SET_CARRY\n\t"
         "movl $0,%2\n\t"
         "jmp ADD_RET\n\t"
@@ -37,7 +35,7 @@ UINT128 UINT128Add(UINT128 u128l,
         "movq %%rax,%1"
         : "=r"(u128ans.low), "=r"(u128ans.high), "=r"(__UINT128_CARRIED)
         : "r"(u128l.high), "r"(u128l.low), "r"(u128r.high), "r"(u128r.low)
-        : "%rax", "%rbx", "%rcx", "%rdx");
+        : "%rax", "%rbx");
 
     return u128ans;
 }
@@ -50,15 +48,13 @@ UINT128 UINT128AddNoCarry(UINT128 u128l,
     asm(
         "movq %3,%%rax\n\t"
         "movq %4,%%rbx\n\t"
-        "movq %5,%%rcx\n\t"
-        "movq %6,%%rdx\n\t"
-        "addq %%rdx,%%rbx\n\t"
-        "adcq %%rcx,%%rax\n\t"
+        "addq %6,%%rbx\n\t"
+        "adcq %5,%%rax\n\t"
         "movq %%rbx,%0\n\t"
         "movq %%rax,%1"
         : "=r"(u128ans.low), "=r"(u128ans.high), "=r"(__UINT128_CARRIED)
         : "r"(u128l.high), "r"(u128l.low), "r"(u128r.high), "r"(u128r.low)
-        : "%rax", "%rbx", "%rcx", "%rdx");
+        : "%rax", "%rbx");
 
     return u128ans;
 }
@@ -71,10 +67,8 @@ UINT128 UINT128Sub(UINT128 u128l,
     asm(
         "movq %3,%%rax\n\t"
         "movq %4,%%rbx\n\t"
-        "movq %5,%%rcx\n\t"
-        "movq %6,%%rdx\n\t"
-        "subq %%rdx,%%rbx\n\t"
-        "sbbq %%rcx,%%rax\n\t"
+        "subq %6,%%rbx\n\t"
+        "sbbq %5,%%rax\n\t"
         "jc SUB_SET_CARRY\n\t"
         "movl $0,%2\n\t"
         "jmp SUB_RET\n\t"
@@ -85,7 +79,7 @@ UINT128 UINT128Sub(UINT128 u128l,
         "movq %%rax,%1"
         : "=r"(u128ans.low), "=r"(u128ans.high), "=r"(__UINT128_CARRIED)
         : "r"(u128l.high), "r"(u128l.low), "r"(u128r.high), "r"(u128r.low)
-        : "%rax", "%rbx", "%rcx", "%rdx");
+        : "%rax", "%rbx");
 
     return u128ans;
 }
@@ -98,15 +92,13 @@ UINT128 UINT128SubNoCarry(UINT128 u128l,
     asm(
         "movq %3,%%rax\n\t"
         "movq %4,%%rbx\n\t"
-        "movq %5,%%rcx\n\t"
-        "movq %6,%%rdx\n\t"
-        "subq %%rdx,%%rbx\n\t"
-        "sbbq %%rcx,%%rax\n\t"
+        "subq %6,%%rbx\n\t"
+        "sbbq %5,%%rax\n\t"
         "movq %%rbx,%0\n\t"
         "movq %%rax,%1"
         : "=r"(u128ans.low), "=r"(u128ans.high), "=r"(__UINT128_CARRIED)
         : "r"(u128l.high), "r"(u128l.low), "r"(u128r.high), "r"(u128r.low)
-        : "%rax", "%rbx", "%rcx", "%rdx");
+        : "%rax", "%rbx");
 
     return u128ans;
 }
@@ -123,13 +115,12 @@ UINT128 UINT64Mul(uint64_t u64l,
 
     asm(
         "movq %2,%%rax\n\t"
-        "movq %3,%%rbx\n\t"
-        "mulq %%rbx\n\t"
+        "mulq %3\n\t"
         "movq %%rdx,%1\n\t"
         "movq %%rax,%0\n\t"
         : "=r"(u128ans.low), "=r"(u128ans.high)
         : "r"(u64l), "r"(u64r)
-        : "%rax", "%rbx", "%rcx", "%rdx");
+        : "%rax", "%rdx");
 
     return u128ans;
 }
@@ -143,13 +134,12 @@ uint64_t __UINT64DivNoOverflow(UINT128   u128l,
     asm(
         "movq %2,%%rax\n\t"
         "movq %3,%%rdx\n\t"
-        "movq %4,%%rbx\n\t"
-        "divq %%rbx\n\t"
+        "divq %4\n\t"
         "movq %%rax,%0\n\t"
         "movq %%rdx,%1"
         : "=r"(u64ans), "=r"(u64rem)
         : "r"(u128l.low), "r"(u128l.high), "r"(u64r)
-        : "%rax", "%rbx", "%rcx", "%rdx");
+        : "%rax", "%rdx");
 
     if (pu64rem) {
         *pu64rem = u64rem;
