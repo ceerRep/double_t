@@ -12,34 +12,34 @@ int mind(int l, int r)
     return l < r ? l : r;
 }
 
-int __doubleDIsNan(DOUBLED l)
+int doubleDIsNan(DOUBLED l)
 {
     return l.expo == EXPO_SPEC && l.val != VAL_INF;
 }
 
-int __doubleDIsInf(DOUBLED l)
+int doubleDIsInf(DOUBLED l)
 {
     return l.expo == EXPO_SPEC && l.val == VAL_INF;
 }
 
-int __doubleDIsZero(DOUBLED l)
+int doubleDIsZero(DOUBLED l)
 {
     return l.expo == 0 && l.val == 0;
 }
 
-void __doubleDSetInf(DOUBLED* l)
+void doubleDSetInf(DOUBLED* l)
 {
     l->expo = EXPO_SPEC;
     l->val  = 0;
 }
 
-void __doubleDSetNan(DOUBLED* l)
+void doubleDSetNan(DOUBLED* l)
 {
     l->expo = EXPO_SPEC;
     l->val  = 1;
 }
 
-signed __doubleDGetExpo(DOUBLED l)
+signed doubleDGetExpo(DOUBLED l)
 {
     if (l.expo) {
         return (signed)l.expo - EXPO_BIAS;
@@ -49,7 +49,7 @@ signed __doubleDGetExpo(DOUBLED l)
     }
 }
 
-UINT128 __doubleDGetVal(DOUBLED l)
+UINT128 doubleDGetVal(DOUBLED l)
 {
     UINT128 t;
 
@@ -66,10 +66,10 @@ UINT128 __doubleDGetVal(DOUBLED l)
 }
 
 //returns cut width
-int __doubleDSetVal(DOUBLED* pbad,
-                    UINT128  u128v,
-                    signed   expo,
-                    UINT128* pu128cutNum)
+int doubleDSetVal(DOUBLED* pbad,
+                  UINT128  u128v,
+                  signed   expo,
+                  UINT128* pu128cutNum)
 {
     UINT128 u128toCut;
 
@@ -109,7 +109,7 @@ int __doubleDSetVal(DOUBLED* pbad,
     }
 
     if (expo > EXPO_MAX) {
-        __doubleDSetInf(pbad);
+        doubleDSetInf(pbad);
         if (pu128cutNum) {
             pu128cutNum->low  = 0;
             pu128cutNum->high = 0;
@@ -162,8 +162,8 @@ int __doubleDSetVal(DOUBLED* pbad,
     return shrnum;
 }
 
-int __doubleDCMP(DOUBLED l,
-                 DOUBLED r)
+int doubleDCMP(DOUBLED l,
+               DOUBLED r)
 {
     if (l.sign) {
         l.expo = ~l.expo;
@@ -187,24 +187,24 @@ int __doubleDCMP(DOUBLED l,
         return 1;
 }
 
-DOUBLED __doubleDAdd(DOUBLED l,
-                     DOUBLED r)
+DOUBLED doubleDAdd(DOUBLED l,
+                   DOUBLED r)
 {
-    if (__doubleDIsInf(l) || __doubleDIsInf(r)) {
-        if (__doubleDIsInf(r) && (l.sign ^ r.sign)) {
-            __doubleDSetNan(&l);
+    if (doubleDIsInf(l) || doubleDIsInf(r)) {
+        if (doubleDIsInf(r) && (l.sign ^ r.sign)) {
+            doubleDSetNan(&l);
         }
         return l;
     }
 
-    if (__doubleDIsNan(l) || __doubleDIsNan(r)) {
-        __doubleDSetNan(&l);
+    if (doubleDIsNan(l) || doubleDIsNan(r)) {
+        doubleDSetNan(&l);
         return l;
     }
 
     if (l.sign ^ r.sign) {
         r.sign ^= 1;
-        return __doubleDSub(l, r);
+        return doubleDSub(l, r);
     }
 
     DOUBLED ret;
@@ -213,7 +213,7 @@ DOUBLED __doubleDAdd(DOUBLED l,
 
     l.sign = r.sign = 0;
 
-    if (__doubleDCMP(l, r) == -1) {
+    if (doubleDCMP(l, r) == -1) {
         DOUBLED tmp;
 
         tmp = l;
@@ -221,40 +221,40 @@ DOUBLED __doubleDAdd(DOUBLED l,
         r   = tmp;
     }
 
-    UINT128 lv = __doubleDGetVal(l),
-            rv = __doubleDGetVal(r);
+    UINT128 lv = doubleDGetVal(l),
+            rv = doubleDGetVal(r);
 
     int shlnum = UINT128Clz(lv) - 1;
 
     lv = UINT128Shl(lv, shlnum);
     rv = UINT128Shl(rv, shlnum);
 
-    rv = UINT128Shr(rv, __doubleDGetExpo(l) - __doubleDGetExpo(r));
+    rv = UINT128Shr(rv, doubleDGetExpo(l) - doubleDGetExpo(r));
     lv = UINT128AddNoCarry(lv, rv);
 
-    __doubleDSetVal(&ret, lv, __doubleDGetExpo(l) - shlnum - CALC_SHIFT_WIDTH, NULL);
+    doubleDSetVal(&ret, lv, doubleDGetExpo(l) - shlnum - CALC_SHIFT_WIDTH, NULL);
 
     return ret;
 }
 
-DOUBLED __doubleDSub(DOUBLED l,
-                     DOUBLED r)
+DOUBLED doubleDSub(DOUBLED l,
+                   DOUBLED r)
 {
-    if (__doubleDIsInf(l) || __doubleDIsInf(r)) {
-        if (__doubleDIsInf(r) && !(l.sign ^ r.sign)) {
-            __doubleDSetNan(&l);
+    if (doubleDIsInf(l) || doubleDIsInf(r)) {
+        if (doubleDIsInf(r) && !(l.sign ^ r.sign)) {
+            doubleDSetNan(&l);
         }
         return l;
     }
 
-    if (__doubleDIsNan(l) || __doubleDIsNan(r)) {
-        __doubleDSetNan(&l);
+    if (doubleDIsNan(l) || doubleDIsNan(r)) {
+        doubleDSetNan(&l);
         return l;
     }
 
     if (l.sign ^ r.sign) {
         r.sign ^= 1;
-        return __doubleDAdd(l, r);
+        return doubleDAdd(l, r);
     }
 
     DOUBLED ret;
@@ -263,7 +263,7 @@ DOUBLED __doubleDSub(DOUBLED l,
 
     l.sign = r.sign = 0;
 
-    if (__doubleDCMP(l, r) == -1) {
+    if (doubleDCMP(l, r) == -1) {
         DOUBLED tmp;
 
         tmp = l;
@@ -273,15 +273,15 @@ DOUBLED __doubleDSub(DOUBLED l,
         ret.sign ^= 1;
     }
 
-    UINT128 lv = __doubleDGetVal(l),
-            rv = __doubleDGetVal(r);
+    UINT128 lv = doubleDGetVal(l),
+            rv = doubleDGetVal(r);
 
     int shlnum = UINT128Clz(lv) - 1;
 
     lv = UINT128Shl(lv, shlnum);
     rv = UINT128Shl(rv, shlnum);
 
-    rv = UINT128Shr(rv, __doubleDGetExpo(l) - __doubleDGetExpo(r));
+    rv = UINT128Shr(rv, doubleDGetExpo(l) - doubleDGetExpo(r));
     lv = UINT128Sub(lv, rv);
 
     if (UINT128GetCarry()) {
@@ -291,13 +291,13 @@ DOUBLED __doubleDSub(DOUBLED l,
         ret.sign ^= 1;
     }
 
-    __doubleDSetVal(&ret, lv, __doubleDGetExpo(l) - shlnum - CALC_SHIFT_WIDTH, NULL);
+    doubleDSetVal(&ret, lv, doubleDGetExpo(l) - shlnum - CALC_SHIFT_WIDTH, NULL);
 
     return ret;
 }
 
-DOUBLED __doubleDMul(DOUBLED l,
-                     DOUBLED r)
+DOUBLED doubleDMul(DOUBLED l,
+                   DOUBLED r)
 {
     DOUBLED ret;
 
@@ -305,36 +305,36 @@ DOUBLED __doubleDMul(DOUBLED l,
 
     //TODO: L'Hopital
 
-    if (__doubleDIsNan(l) || __doubleDIsNan(r)) {
-        __doubleDSetNan(&ret);
+    if (doubleDIsNan(l) || doubleDIsNan(r)) {
+        doubleDSetNan(&ret);
         return ret;
     }
 
-    if (__doubleDIsInf(l) || __doubleDIsInf(r)) {
-        if (__doubleDIsZero(l) || __doubleDIsZero(r)) {
-            __doubleDSetNan(&ret);
+    if (doubleDIsInf(l) || doubleDIsInf(r)) {
+        if (doubleDIsZero(l) || doubleDIsZero(r)) {
+            doubleDSetNan(&ret);
             return ret;
         }
         else {
-            __doubleDSetInf(&ret);
+            doubleDSetInf(&ret);
             return ret;
         }
     }
 
-    signed expo = __doubleDGetExpo(l) + __doubleDGetExpo(r);
+    signed expo = doubleDGetExpo(l) + doubleDGetExpo(r);
 
-    UINT128 lv = UINT64Mul(__doubleDGetVal(l).low,
-                           __doubleDGetVal(r).low);
+    UINT128 lv = UINT64Mul(doubleDGetVal(l).low,
+                           doubleDGetVal(r).low);
 
     //DONE shl;
 
-    __doubleDSetVal(&ret, lv, expo - CALC_SHIFT_WIDTH - (CALC_UNIT_WIDTH_HALF - 1), NULL);
+    doubleDSetVal(&ret, lv, expo - CALC_SHIFT_WIDTH - (CALC_UNIT_WIDTH_HALF - 1), NULL);
 
     return ret;
 }
 
-DOUBLED __doubleDDiv(DOUBLED l,
-                     DOUBLED r)
+DOUBLED doubleDDiv(DOUBLED l,
+                   DOUBLED r)
 {
     DOUBLED ret;
 
@@ -342,40 +342,40 @@ DOUBLED __doubleDDiv(DOUBLED l,
 
     //TODO: L'Hopital
 
-    if (__doubleDIsNan(l) || __doubleDIsNan(r)) {
-        __doubleDSetNan(&ret);
+    if (doubleDIsNan(l) || doubleDIsNan(r)) {
+        doubleDSetNan(&ret);
         return ret;
     }
 
-    if (__doubleDIsZero(r)) {
-        if (__doubleDIsZero(l)) {
-            __doubleDSetNan(&ret);
+    if (doubleDIsZero(r)) {
+        if (doubleDIsZero(l)) {
+            doubleDSetNan(&ret);
             return ret;
         }
         else {
-            __doubleDSetInf(&ret);
+            doubleDSetInf(&ret);
             return ret;
         }
     }
 
-    if (__doubleDIsInf(l)) {
-        __doubleDSetInf(&ret);
+    if (doubleDIsInf(l)) {
+        doubleDSetInf(&ret);
         return ret;
     }
 
-    if (__doubleDIsInf(r)) {
+    if (doubleDIsInf(r)) {
         ret.expo = ret.val = 0;
         return ret;
     }
 
-    signed expo = __doubleDGetExpo(l) - __doubleDGetExpo(r);
+    signed expo = doubleDGetExpo(l) - doubleDGetExpo(r);
 
     //DONE : 非规约 精度损失
 
     //DONE : 无穷精度损失
 
-    UINT128  lv = __doubleDGetVal(l);
-    uint64_t rv = __doubleDGetVal(r).low;
+    UINT128  lv = doubleDGetVal(l);
+    uint64_t rv = doubleDGetVal(r).low;
     uint64_t rem;
 
     while (lv.low && !(lv.low & CALC_TOP_BIT_HALF)) {
@@ -397,39 +397,39 @@ DOUBLED __doubleDDiv(DOUBLED l,
         lv = UINT128Add(lv, UINT128_ONE);
     }
 
-    __doubleDSetVal(&ret, lv, expo - CALC_SHIFT_WIDTH - 2, NULL);
+    doubleDSetVal(&ret, lv, expo - CALC_SHIFT_WIDTH - 2, NULL);
 
     return ret;
 }
 
 int doubleTIsNan(DOUBLET l)
 {
-    return __doubleDIsNan(REINTERPRET_TO_DOUBLED(l));
+    return doubleDIsNan(REINTERPRET_TO_DOUBLED(l));
 }
 
 int doubleTIsInf(DOUBLET l)
 {
-    return __doubleDIsInf(REINTERPRET_TO_DOUBLED(l));
+    return doubleDIsInf(REINTERPRET_TO_DOUBLED(l));
 }
 int doubleTIsZero(DOUBLET l)
 {
-    return __doubleDIsZero(REINTERPRET_TO_DOUBLED(l));
+    return doubleDIsZero(REINTERPRET_TO_DOUBLED(l));
 }
 void doubleTSetInf(DOUBLET* l)
 {
-    return __doubleDSetInf(&REINTERPRET_TO_DOUBLED(*l));
+    return doubleDSetInf(&REINTERPRET_TO_DOUBLED(*l));
 }
 void doubleTSetNan(DOUBLET* l)
 {
-    return __doubleDSetNan(&REINTERPRET_TO_DOUBLED(*l));
+    return doubleDSetNan(&REINTERPRET_TO_DOUBLED(*l));
 }
 signed doubleTGetExpo(DOUBLET l)
 {
-    return __doubleDGetExpo(REINTERPRET_TO_DOUBLED(l));
+    return doubleDGetExpo(REINTERPRET_TO_DOUBLED(l));
 }
 UINT128 doubleTGetVal(DOUBLET l)
 {
-    return __doubleDGetVal(REINTERPRET_TO_DOUBLED(l));
+    return doubleDGetVal(REINTERPRET_TO_DOUBLED(l));
 }
 
 int doubleTSetVal(DOUBLET* pbad,
@@ -437,39 +437,39 @@ int doubleTSetVal(DOUBLET* pbad,
                   signed   expo,
                   UINT128* cut_num)
 {
-    return __doubleDSetVal(&REINTERPRET_TO_DOUBLED(*pbad),
-                           v,
-                           expo,
-                           cut_num);
+    return doubleDSetVal(&REINTERPRET_TO_DOUBLED(*pbad),
+                         v,
+                         expo,
+                         cut_num);
 }
 
 int doubleTCMP(DOUBLET l,
                DOUBLET r)
 {
-    return __doubleDCMP(REINTERPRET_TO_DOUBLED(l), REINTERPRET_TO_DOUBLED(r));
+    return doubleDCMP(REINTERPRET_TO_DOUBLED(l), REINTERPRET_TO_DOUBLED(r));
 }
 
 DOUBLET doubleTAdd(DOUBLET l,
                    DOUBLET r)
 {
-    DOUBLED ans = __doubleDAdd(REINTERPRET_TO_DOUBLED(l), REINTERPRET_TO_DOUBLED(r));
+    DOUBLED ans = doubleDAdd(REINTERPRET_TO_DOUBLED(l), REINTERPRET_TO_DOUBLED(r));
     return REINTERPRET_TO_DOUBLET(ans);
 }
 DOUBLET doubleTSub(DOUBLET l,
                    DOUBLET r)
 {
-    DOUBLED ans = __doubleDSub(REINTERPRET_TO_DOUBLED(l), REINTERPRET_TO_DOUBLED(r));
+    DOUBLED ans = doubleDSub(REINTERPRET_TO_DOUBLED(l), REINTERPRET_TO_DOUBLED(r));
     return REINTERPRET_TO_DOUBLET(ans);
 }
 DOUBLET doubleTMul(DOUBLET l,
                    DOUBLET r)
 {
-    DOUBLED ans = __doubleDMul(REINTERPRET_TO_DOUBLED(l), REINTERPRET_TO_DOUBLED(r));
+    DOUBLED ans = doubleDMul(REINTERPRET_TO_DOUBLED(l), REINTERPRET_TO_DOUBLED(r));
     return REINTERPRET_TO_DOUBLET(ans);
 }
 DOUBLET doubleTDiv(DOUBLET l,
                    DOUBLET r)
 {
-    DOUBLED ans = __doubleDDiv(REINTERPRET_TO_DOUBLED(l), REINTERPRET_TO_DOUBLED(r));
+    DOUBLED ans = doubleDDiv(REINTERPRET_TO_DOUBLED(l), REINTERPRET_TO_DOUBLED(r));
     return REINTERPRET_TO_DOUBLET(ans);
 }

@@ -44,30 +44,30 @@ typedef struct double_detail {
  *UINT128 declear
  */
 
-int     __doubleDIsNan(DOUBLED l);
-int     __doubleDIsInf(DOUBLED l);
-int     __doubleDIsZero(DOUBLED l);
-void    __doubleDSetInf(DOUBLED* l);
-void    __doubleDSetNan(DOUBLED* l);
-signed  __doubleDGetExpo(DOUBLED l);
-UINT128 __doubleDGetVal(DOUBLED l);
+int     doubleDIsNan(DOUBLED l);
+int     doubleDIsInf(DOUBLED l);
+int     doubleDIsZero(DOUBLED l);
+void    doubleDSetInf(DOUBLED* l);
+void    doubleDSetNan(DOUBLED* l);
+signed  doubleDGetExpo(DOUBLED l);
+UINT128 doubleDGetVal(DOUBLED l);
 
-int __doubleDSetVal(DOUBLED* pbad,
-                    UINT128  v,
-                    signed   expo,
-                    UINT128* cut_num);
+int doubleDSetVal(DOUBLED* pbad,
+                  UINT128  v,
+                  signed   expo,
+                  UINT128* cut_num);
 
-int __doubleDCMP(DOUBLED l,
-                 DOUBLED r);
+int doubleDCMP(DOUBLED l,
+               DOUBLED r);
 
-DOUBLED __doubleDAdd(DOUBLED l,
-                     DOUBLED r);
-DOUBLED __doubleDSub(DOUBLED l,
-                     DOUBLED r);
-DOUBLED __doubleDMul(DOUBLED l,
-                     DOUBLED r);
-DOUBLED __doubleDDiv(DOUBLED l,
-                     DOUBLED r);
+DOUBLED doubleDAdd(DOUBLED l,
+                   DOUBLED r);
+DOUBLED doubleDSub(DOUBLED l,
+                   DOUBLED r);
+DOUBLED doubleDMul(DOUBLED l,
+                   DOUBLED r);
+DOUBLED doubleDDiv(DOUBLED l,
+                   DOUBLED r);
 
 int     doubleTIsNan(DOUBLET l);
 int     doubleTIsInf(DOUBLET l);

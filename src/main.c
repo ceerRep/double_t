@@ -8,28 +8,28 @@
 #include "double_t.h"
 #include "uint128_util.h"
 
-#define TEST_DOUBLE_OPERATOR(op, func)                     \
-    void test_double_operator_##func(                      \
-        double v1,                                         \
-        double v2)                                         \
-    {                                                      \
-        struct double_detail a, b;                         \
-        double               c, d;                         \
-        REINTERPRET_TO_DOUBLE(a) = v1;                     \
-        REINTERPRET_TO_DOUBLE(b) = v2;                     \
-                                                           \
-        REINTERPRET_TO_DOUBLED(c) = __doubleD##func(a, b); \
-                                                           \
-        d = v1 op v2;                                      \
-                                                           \
-        printf("%lf " #func                                \
-               " %lf: %le %le %le\n",                      \
-               v1,                                         \
-               v2,                                         \
-               c,                                          \
-               d,                                          \
-               (c - d) / (c + d));                         \
-        return;                                            \
+#define TEST_DOUBLE_OPERATOR(op, func)                   \
+    void test_double_operator_##func(                    \
+        double v1,                                       \
+        double v2)                                       \
+    {                                                    \
+        struct double_detail a, b;                       \
+        double               c, d;                       \
+        REINTERPRET_TO_DOUBLE(a) = v1;                   \
+        REINTERPRET_TO_DOUBLE(b) = v2;                   \
+                                                         \
+        REINTERPRET_TO_DOUBLED(c) = doubleD##func(a, b); \
+                                                         \
+        d = v1 op v2;                                    \
+                                                         \
+        printf("%lf " #func                              \
+               " %lf: %le %le %le\n",                    \
+               v1,                                       \
+               v2,                                       \
+               c,                                        \
+               d,                                        \
+               (c - d) / (c + d));                       \
+        return;                                          \
     }
 
 TEST_DOUBLE_OPERATOR(*, Mul)
